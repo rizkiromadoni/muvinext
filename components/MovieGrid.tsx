@@ -1,6 +1,7 @@
 "use client"
 
 import { convertRatingToStarFill } from "@/lib/helper";
+import Image from "next/image";
 import React from "react";
 
 const MovieGrid = ({ title, data }: {
@@ -19,7 +20,8 @@ const MovieGrid = ({ title, data }: {
         {data.map((item, index) => (
             <a href={item.url} className="pb-2" key={index}>
             <div className="block bg-[#1f2022] p-1 aspect-[10/16] transition duration-500 hover:scale-105 z-10">
-              <img
+              <Image
+                alt={item.title}
                 src={item.poster}
                 width={400}
                 height={600}
@@ -29,11 +31,14 @@ const MovieGrid = ({ title, data }: {
             <div className="mt-2">{ item.title }</div>
             <div className="flex text-sm gap-2 items-center">
               <div className="relative aspect-[11/2] w-20">
-                <img src="/stars.webp" className="absolute inset-0" />
-                <img
+                <Image
+                alt="" src="/stars.webp" className="absolute inset-0" width={80} height={80} />
+                <Image
+                alt=""
                   src="/stars-filled.webp"
                   className="absolute inset-0"
                   style={{ clipPath: `inset(0 ${item.rating ? convertRatingToStarFill(item.rating) : "100"}% 0 0)` }}
+                  width={80} height={80}
                 />
               </div>
               <div className="opacity-75">{item.rating ?? "N/A"}</div>

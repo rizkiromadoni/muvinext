@@ -7,11 +7,17 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 
 const SearchInput = ({ defaultQuery }: { defaultQuery: string }) => {
   const [query, setQuery] = useState(defaultQuery);
+  const [loading, setLoading] = useState(false)
+
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    router.push(`?q=${encodeURIComponent(query)}`);
+
+    if (!loading) {
+      setLoading(true);
+      router.push(`?q=${encodeURIComponent(query)}`);
+    };
   };
 
   return (

@@ -7,22 +7,23 @@ import {
   MagnifyingGlass,
   TelevisionSimple,
 } from "@phosphor-icons/react";
+import Link from 'next/link';
 
 const SidebarMobile = () => {
   return (
     <div className='fixed bottom-0 w-full lg:hidden bg-black p-5 border-t-1 border-gray-700 flex flex-row justify-evenly'>
-        <a href="/">
+        <Link href="/">
           <House weight="fill" className="size-7" />
-        </a>
-        <a href="/movies">
+        </Link>
+        <Link href="/movies">
           <FilmStrip className="size-7" />
-        </a>
-        <a href="/series">
+        </Link>
+        <Link href="/series">
           <TelevisionSimple className="size-7" />
-        </a>
-        <a href="/search">
+        </Link>
+        <Link href="/search">
           <MagnifyingGlass className="size-7" />
-        </a>
+        </Link>
     </div>
   )
 }
