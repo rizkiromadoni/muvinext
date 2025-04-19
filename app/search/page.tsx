@@ -1,6 +1,7 @@
 import React from "react";
 import SearchInput from "@/components/SearchInput";
 import MovieGrid from "@/components/MovieGrid";
+import { prisma } from "@/lib/prisma";
 
 const Search = async ({
   searchParams,
@@ -20,7 +21,41 @@ const Search = async ({
     );
   }
 
-  const posts = await fetch(new URL(`/api/search?q=${q}`, process.env.APP_URL)).then((res) => res.json());
+  const posts = await prisma.wpPost.findMany({
+    where: {
+      postTitle: {
+        contains: q,
+      },
+      postStatus: "publish",
+      postType: {
+        in: ["post", "tv"],
+      },
+    },
+    select: {
+      postTitle: true,
+      postName: true,
+      postType: true,
+      postMetas: {
+        select: {
+          metaKey: true,
+          metaValue: true,
+        },
+        where: {
+          metaKey: {
+            in: [
+              "_knawatfibu_url",
+              "IDMUVICORE_Poster",
+              "IDMUVICORE_tmdbRating",
+            ],
+          },
+        },
+      },
+    },
+    take: 24,
+    orderBy: {
+      postTitle: "asc",
+    },
+  });
 
   return (
     <div className="w-full relative overflow-x-hidden overflow-y-auto">
@@ -30,9 +65,18 @@ const Search = async ({
           title={`Search: ${q}`}
           data={posts.map((item: any) => ({
             title: item.postTitle,
-            url: `/${item.postType === "post" ? "movies" : "series"}/${item.postName}`,
-            poster: item.postMetas.find((meta: any) => meta.metaKey === "_knawatfibu_url" || meta.metaKey === "IDMUVICORE_Poster")?.metaValue,
-            rating: item.postMetas.find((meta: any) => meta.metaKey === "IDMUVICORE_tmdbRating")?.metaValue || null
+            url: `/${item.postType === "post" ? "movies" : "series"}/${
+              item.postName
+            }`,
+            poster: item.postMetas.find(
+              (meta: any) =>
+                meta.metaKey === "_knawatfibu_url" ||
+                meta.metaKey === "IDMUVICORE_Poster"
+            )?.metaValue,
+            rating:
+              item.postMetas.find(
+                (meta: any) => meta.metaKey === "IDMUVICORE_tmdbRating"
+              )?.metaValue || null,
           }))}
         />
       </div>

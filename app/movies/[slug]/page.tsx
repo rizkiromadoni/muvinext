@@ -2,6 +2,8 @@ import MovieBanner from "@/components/MovieBanner";
 import MovieSlider from "@/components/MovieSlider";
 import NotFound from "@/components/NotFound";
 import SingleMoviePage from "@/components/pages/SingleMoviePage";
+import { getSingleGenre } from "@/models/genres";
+import { getSingleMovie } from "@/models/movies";
 import React, { FC } from "react";
 
 interface SingleMoviesProps {
@@ -12,15 +14,12 @@ interface SingleMoviesProps {
 
 const SingleMovies: FC<SingleMoviesProps> = async ({ params }) => {
   const { slug } = await params;
-  const post = await fetch(new URL(`/api/movies/get?slug=${slug}`, process.env.APP_URL)).then((res) => {
-    if (res.status === 404) return null;
-    return res.json();
-  });
+  const post = await getSingleMovie(slug) as any;
 
   if (!post) return <NotFound />
 
   const genres = post.relationships.filter((item: any) => item.taxonomy.taxonomy === "category").map((item: any) => item.taxonomy.term)
-  const similar = await fetch(new URL(`/api/genres/get?slug=${genres[0].slug}&orderBy=modified&limit=10`, process.env.APP_URL)).then((res) => res.json()) as any;
+  const similar = await getSingleGenre(genres[0].slug, 10, "modified") as any;
 
   return (
     <div className="w-full relative overflow-x-hidden overflow-y-auto">

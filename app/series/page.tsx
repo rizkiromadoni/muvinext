@@ -1,8 +1,9 @@
 import MovieGrid from '@/components/MovieGrid'
+import { getSeries } from '@/models/series'
 import React from 'react'
 
 const Series = async () => {
-  const posts = await fetch(new URL("api/series?limit=24", process.env.APP_URL)).then((res) => res.json());
+  const posts = await getSeries(24)
 
   return (
     <div className="w-full relative overflow-x-hidden overflow-y-auto">

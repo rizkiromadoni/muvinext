@@ -7,17 +7,13 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 
 const SearchInput = ({ defaultQuery }: { defaultQuery: string }) => {
   const [query, setQuery] = useState(defaultQuery);
-  const [loading, setLoading] = useState(false)
-
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!loading) {
-      setLoading(true);
-      router.push(`?q=${encodeURIComponent(query)}`);
-    };
+    if (!query.trim()) return;
+    router.push(`?q=${encodeURIComponent(query.trim())}`);
   };
 
   return (
@@ -25,15 +21,15 @@ const SearchInput = ({ defaultQuery }: { defaultQuery: string }) => {
       className="flex bg-[#282a2c] items-center px-6 py-4 gap-3 sticky"
       onSubmit={handleSubmit}
     >
-      <button type="submit">
+      <button type="submit" className="cursor-pointer">
         <MagnifyingGlass className="text-xl opacity-50" />
       </button>
       <input
-        type="text"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="text-2xl bg-transparent outline-none w-full"
-        placeholder="Search"
+      type="text"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+      className="text-2xl bg-transparent outline-none w-full"
+      placeholder={"Search"}
       />
     </form>
   );

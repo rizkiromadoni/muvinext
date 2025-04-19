@@ -22,7 +22,7 @@ const MovieGrid = ({ title, data }: {
             <div className="block bg-[#1f2022] p-1 aspect-[10/16] transition duration-500 hover:scale-105 z-10">
               <Image
                 alt={item.title}
-                src={item.poster}
+                src={item.poster || "/no-image.png"}
                 width={400}
                 height={600}
                 className="w-full h-full object-cover"
@@ -32,9 +32,9 @@ const MovieGrid = ({ title, data }: {
             <div className="flex text-sm gap-2 items-center">
               <div className="relative aspect-[11/2] w-20">
                 <Image
-                alt="" src="/stars.webp" className="absolute inset-0" width={80} height={80} />
+                alt="stars" src="/stars.webp" className="absolute inset-0" width={80} height={80} />
                 <Image
-                alt=""
+                  alt="stars"
                   src="/stars-filled.webp"
                   className="absolute inset-0"
                   style={{ clipPath: `inset(0 ${item.rating ? convertRatingToStarFill(item.rating) : "100"}% 0 0)` }}

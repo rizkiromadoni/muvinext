@@ -1,14 +1,17 @@
 import MovieBanner from "@/components/MovieBanner";
 import MovieSlider from "@/components/MovieSlider";
+import { getBillboard } from "@/models/billboard";
+import { getMovies } from "@/models/movies";
+import { getSeries } from "@/models/series";
 import Link from "next/link";
 
 import React from "react";
 
 const Home = async () => {
-  const billboard = await fetch(process.env.APP_URL + "/api/billboard").then((res) => res.json());
+  const billboard = await getBillboard() as any;
 
-  const movies = await fetch(process.env.APP_URL + "/api/movies?limit=20").then((res) => res.json());
-  const series = await fetch(process.env.APP_URL + "/api/series?limit=20").then((res) => res.json());
+  const movies = await getMovies(20);
+  const series = await getSeries(20);
 
   return (
     <div className="w-full relative overflow-x-hidden overflow-y-auto">
