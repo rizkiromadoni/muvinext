@@ -18,6 +18,18 @@ const SingleSeries: FC<SingleSeriesProps> = async ({ params }) => {
   const post = (await getSingleSeries(slug)) as any;
   if (!post) return <NotFound />;
 
+  const tmdbId = post.postMetas.find((item: any) => item.metaKey === "IDMUVICORE_tmdbID")?.metaValue;
+  const details = await fetch(`https://api.themoviedb.org/3/tv/${tmdbId.slice(0, tmdbId.length - 1)}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.TMDB_API_KEY}`
+    }
+  }).then((res) => res.json());
+
+  if (details.overview) {
+    post.postContent = details.overview;
+  }
+
   const genres = post.relationships
     .filter((item: any) => item.taxonomy.taxonomy === "category")
     .map((item: any) => item.taxonomy.term);
@@ -31,7 +43,7 @@ const SingleSeries: FC<SingleSeriesProps> = async ({ params }) => {
           post.postMetas.find((item: any) => item.metaKey === "_knawatfibu_url")
             ?.metaValue || null
         }
-        description={post.postContent}
+        description={details.overview || ""}
         rating={
           post.postMetas.find(
             (item: any) => item.metaKey === "IDMUVICORE_tmdbRating"

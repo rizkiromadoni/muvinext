@@ -15,7 +15,8 @@ const nextConfig: NextConfig = {
     ]
   },
   env: {
-    APP_NAME: process.env.APP_NAME
+    APP_NAME: process.env.APP_NAME,
+    TMDB_API_KEY: process.env.TMDB_API_KEY
   }
 };
 

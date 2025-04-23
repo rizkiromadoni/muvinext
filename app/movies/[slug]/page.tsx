@@ -17,6 +17,17 @@ const SingleMovies: FC<SingleMoviesProps> = async ({ params }) => {
   const post = await getSingleMovie(slug) as any;
 
   if (!post) return <NotFound />
+  const tmdbId = post.postMetas.find((item: any) => item.metaKey === "IDMUVICORE_tmdbID")?.metaValue;
+  const details = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.TMDB_API_KEY}`
+    }
+  }).then((res) => res.json());
+
+  if (details.overview) {
+    post.postContent = details.overview;
+  }
 
   const genres = post.relationships.filter((item: any) => item.taxonomy.taxonomy === "category").map((item: any) => item.taxonomy.term)
   const similar = await getSingleGenre(genres[0].slug, 10, "modified") as any;
@@ -26,7 +37,7 @@ const SingleMovies: FC<SingleMoviesProps> = async ({ params }) => {
       <MovieBanner
         title={post.postTitle}
         poster={post.postMetas.find((item: any) => item.metaKey === "_knawatfibu_url")?.metaValue || null}
-        description={post.postContent}
+        description={details.overview || ""}
         rating={post.postMetas.find((item: any) => item.metaKey === "IDMUVICORE_tmdbRating")?.metaValue || null}
         reviews={post.postMetas.find((item: any) => item.metaKey === "IDMUVICORE_tmdbVotes")?.metaValue || null}
         year={post.postMetas.find((item: any) => item.metaKey === "IDMUVICORE_Year")?.metaValue || null}
