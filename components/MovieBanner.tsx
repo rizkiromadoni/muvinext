@@ -29,7 +29,7 @@ const MovieBanner = ({ title, poster, description, rating, reviews, year, runtim
           <h1 className="mt-2 text-4xl lg:text-5xl line-clamp-2">
             {title}
           </h1>
-          <div className="flex flex-row flex-wrap gap-2 items-center mt-4">
+          <div className="flex flex-row flex-wrap gap-2 items-center mt-4 gap">
             {rating && (
               <>
                 <div className="relative aspect-[11/2] w-25">
@@ -42,12 +42,12 @@ const MovieBanner = ({ title, poster, description, rating, reviews, year, runtim
                   width={100} height={100}
                 />
               </div>
-                <div className="opacity-50 hidden md:block">{rating}</div>
+              <div className="opacity-50 hidden md:block">{rating}</div>
               </>
             )}
             {reviews && (
               <>
-                <span className="opacity-50 md:block">.</span>
+                <span className="opacity-50 hidden md:block">.</span>
                 <div className="opacity-50 hidden md:block">{reviews} Reviews</div>
               </>
             )}

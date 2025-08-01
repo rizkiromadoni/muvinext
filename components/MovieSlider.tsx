@@ -21,17 +21,17 @@ const MovieSlider = ({
 }) => {
   return (
     <>
-      <div className="flex flex-row items-center justify-between mt-5 py-3 px-10">
-        <div className="text-2xl">{title}</div>
+      <div className="flex flex-row items-center justify-between mt-5 py-3 px-4 lg:px-10 text-xl lg:text-2xl">
+        <h1 className="">{title}</h1>
         {moreUrl && (
-          <Link href={moreUrl} className="text-gray-500">
+          <Link href={moreUrl} className="text-gray-500 text-base lg:text-lg">
             Explore More
           </Link>
         )}
       </div>
       <div className="relative">
         <div className="overflow-y-auto scrollbar scrollbar-thumb-[#36393c] scrollbar-track-[#1f2022]">
-          <div className="flex w-max gap-2 p-2 px-10">
+          <div className="flex w-max gap-2 p-2 px-4 lg:px-10">
             {data.map((item, index) => (
               <Link href={item.url} className="flex-1 w-40 md:w-60 pb-2" key={index}>
                 <div className="block bg-[#1f2022] p-1 aspect-[10/16] hover:scale-105 transition duration-400 z-10">

@@ -19,7 +19,7 @@ const Sidebar = () => {
       <Link href="/movies">
         <FilmStrip className="size-7" />
       </Link>
-      <Link href="/series">
+      <Link href="/tv">
         <TelevisionSimple className="size-7" />
       </Link>
       <Link href="/search">
