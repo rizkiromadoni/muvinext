@@ -1,7 +1,7 @@
 import { getMovieGenres } from "@/models/tmdb/genreModel";
 import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
+export async function GET() {
    try {
       const result = await getMovieGenres();
       return NextResponse.json(result);

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 type Review = {
   id: number;
@@ -19,6 +20,8 @@ const ReviewForm = ({ tmdbId }: { tmdbId: number | string }) => {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const recaptchaRef = React.createRef<ReCAPTCHA>();
+
   useEffect(() => {
     setLoading(true);
     fetch(`/api/reviews?tmdbId=${tmdbId}`)
@@ -31,34 +34,41 @@ const ReviewForm = ({ tmdbId }: { tmdbId: number | string }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const token = recaptchaRef.current?.getValue();
+    recaptchaRef.current?.reset();
+    
     // validation
-    if (!name || !rating || !comment) return;
+    if (!name || !rating || !comment || !token) return;
+    
+    try {
+      setLoading(true);
+      const res = await fetch(`/api/reviews?token=${token}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tmdbId: Number(tmdbId),
+          name,
+          rating,
+          comment,
+        }),
+      });
 
-    setLoading(true);
-    const res = await fetch(`/api/reviews`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tmdbId: Number(tmdbId),
-        name,
-        rating,
-        comment,
-      }),
-    });
-
-    if (res.ok) {
-      const newReview = await res.json();
+      if (res.ok) {
+        const newReview = await res.json();
+        setReviews((prev) => [newReview, ...prev]);
+      } else {
+        throw new Error("Failed to submit review");
+      }
+    } catch (error) {
+      alert((error as Error).message);
+    } finally {
       setName("");
       setRating(0);
       setComment("");
-      setReviews((prev) => [newReview, ...prev]);
-    } else {
-      alert("Something went wrong");
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   function getAverageRating() {
@@ -77,19 +87,18 @@ const ReviewForm = ({ tmdbId }: { tmdbId: number | string }) => {
   }
 
   function formatDate(date: Date): string {
-  const options: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  };
+    const options: Intl.DateTimeFormatOptions = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
 
-  const formatted = new Intl.DateTimeFormat('en-US', options).format(date);
-  return formatted.replace(',', '');
-}
-
+    const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
+    return formatted.replace(",", "");
+  }
 
   return (
     <div className="flex flex-col md:flex-row items-start justify-center gap-10 py-6">
@@ -141,6 +150,13 @@ const ReviewForm = ({ tmdbId }: { tmdbId: number | string }) => {
             id="comment"
             className="bg-[#1f2022] border border-[#27282b] text-white text-sm rounded-lg block w-full p-2.5 focus:ring-[#313235] focus:border-[#313235] focus:ring-1 outline-none"
             onChange={(e) => setComment(e.target.value)}
+            value={comment}
+          />
+        </div>
+        <div className="w-full flex justify-center items-center mb-3">
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey={process.env.NEXT_PUBLIC_CAPTCHA_SITE_KEY!}
           />
         </div>
         <button
@@ -268,37 +284,44 @@ const ReviewForm = ({ tmdbId }: { tmdbId: number | string }) => {
 
           <div className="mt-18 divide-y divide-gray-200 dark:divide-gray-700">
             {reviews.map((review) => (
-              <div className="gap-3 py-6 sm:flex sm:items-start" key={review.id}>
+              <div
+                className="gap-3 py-6 sm:flex sm:items-start"
+                key={review.id}
+              >
                 <div className="shrink-0 space-y-2 sm:w-48 md:w-72">
                   <div className="flex items-center gap-0.5">
-                    {Array(review.rating).fill(0).map((_, i) => (
-                      <svg
-                      key={i}
-                        className="h-4 w-4 text-yellow-300"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                      </svg>
-                    ))}
-                    {Array(5 - review.rating).fill(0).map((_, i) => (
-                    <svg
-                    key={i}
-                      className="h-4 w-4 text-[#313235]"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                    </svg>
-                    ))}
+                    {Array(review.rating)
+                      .fill(0)
+                      .map((_, i) => (
+                        <svg
+                          key={i}
+                          className="h-4 w-4 text-yellow-300"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
+                        </svg>
+                      ))}
+                    {Array(5 - review.rating)
+                      .fill(0)
+                      .map((_, i) => (
+                        <svg
+                          key={i}
+                          className="h-4 w-4 text-[#313235]"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
+                        </svg>
+                      ))}
                   </div>
 
                   <div className="space-y-0.5">

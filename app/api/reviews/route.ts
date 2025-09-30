@@ -26,6 +26,24 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+   const { searchParams } = new URL(req.url);
+   const token = searchParams.get("token");
+
+   if (!token) return NextResponse.json({ error: "Token is required" }, { status: 400 });
+
+   // verify recaptcha
+   const secretKey = process.env.CAPTCHA_SECRET_KEY;
+   const verifyUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`;
+   
+   const response = await fetch(verifyUrl, {
+      method: "POST",
+   });
+
+   const captchaResponse = await response.json();
+   if (!captchaResponse.success) {
+      return NextResponse.json({ error: "Failed to verify reCAPTCHA" }, { status: 400 });
+   }
+
    const body = await req.json();
    const review = ReviewSchama.safeParse(body);
 
