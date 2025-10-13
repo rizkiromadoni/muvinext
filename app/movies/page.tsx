@@ -2,6 +2,15 @@ import MovieSlider from '@/components/MovieSlider';
 import { getNowPlayingMovies, getTopRatedMovies, getUpcomingMovies } from '@/models/tmdb/movieModel';
 import React from 'react'
 
+export const metadata = {
+  title: 'Movies',
+  description: 'Browse and discover movies. Find top-rated, upcoming, and now-playing movies with detailed information and reviews.',
+  openGraph: {
+    title: 'Movies',
+    description: 'Browse and discover movies. Find top-rated, upcoming, and now-playing movies with detailed information and reviews.',
+  },
+}
+
 const Movies = async () => {
   const nowPlaying = await getNowPlayingMovies();
   const topRatedMovies = await getTopRatedMovies();

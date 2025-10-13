@@ -4,6 +4,29 @@ import Link from "next/link";
 
 import React from "react";
 import { getBillboard, getTrendingMovies, getTrendingTV } from "@/models/tmdb/tmdbModel";
+import { getSettings } from "@/actions";
+
+export async function generateMetadata() {
+  const settings = await getSettings();
+  const siteTitle = settings.find((item: any) => item.name === "site-title")?.value || "";
+  const siteDescription = settings.find((item: any) => item.name === "site-description")?.value || "";
+
+  return {
+    title: siteTitle,
+    description: siteDescription,
+    openGraph: {
+      title: siteTitle,
+      description: siteDescription,
+    },
+    twitter: {
+      title: siteTitle,
+      description: siteDescription,
+      card: "summary_large_image",
+      site: settings.find((item: any) => item.name === "site-name")?.value || "",
+      handle: settings.find((item: any) => item.name === "twitter-handle")?.value || "",
+    },
+  }
+}
 
 const Home = async () => {
   const billboard = await getBillboard();

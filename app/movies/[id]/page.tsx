@@ -1,8 +1,9 @@
 import MovieBanner from "@/components/MovieBanner";
 import MovieSlider from "@/components/MovieSlider";
-import NotFound from "@/components/NotFound";
 import SingleMoviePage from "@/components/pages/SingleMoviePage";
 import { getMovie } from "@/models/tmdb/movieModel";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import React, { FC } from "react";
 
 interface SingleMoviesProps {
@@ -11,11 +12,31 @@ interface SingleMoviesProps {
   }>
 }
 
+export async function generateMetadata({ params }: SingleMoviesProps): Promise<Metadata> {
+  const { id } = await params;
+  const movie = await getMovie(id);
+
+  return {
+    title: movie?.title,
+    description: movie?.overview,
+    openGraph: {
+      title: movie?.title,
+      description: movie?.overview,
+      images: [
+        {
+          url: `https://image.tmdb.org/t/p/w1280${movie?.backdrop_path}`,
+          alt: movie?.title,
+        },
+      ],
+    },
+  }
+}
+
 const SingleMovies: FC<SingleMoviesProps> = async ({ params }) => {
   const { id } = await params;
   
   const movie = await getMovie(id);
-  if (!movie) return <NotFound />
+  if (!movie) notFound();
 
   return (
     <div className="w-full relative overflow-x-hidden overflow-y-auto">

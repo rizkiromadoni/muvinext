@@ -20,7 +20,7 @@ const MovieGrid = ({
     <div>
       <h1 className="px-8 pt-8 gap-2 text-3xl">{title}</h1>
       {data.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4 p-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-8">
           {data.map((item, index) => (
             <a href={item.url} className="pb-2" key={index}>
               <div className="block bg-[#1f2022] p-1 aspect-[10/16] transition duration-500 hover:scale-105 z-10">

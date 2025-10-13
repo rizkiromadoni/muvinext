@@ -1,8 +1,9 @@
 import MovieBanner from "@/components/MovieBanner";
 import MovieSlider from "@/components/MovieSlider";
-import NotFound from "@/components/NotFound";
 import SingleSeriesPage from "@/components/pages/SingleSeriesPage";
 import { getTVSeries } from "@/models/tmdb/tvModel";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import React, { FC } from "react";
 
 interface SingleSeriesProps {
@@ -11,11 +12,35 @@ interface SingleSeriesProps {
   }>;
 }
 
+export async function generateMetadata({
+  params,
+}: SingleSeriesProps): Promise<Metadata> {
+  const { id } = await params;
+  const tv = await getTVSeries(id);
+  
+  return {
+    title: tv.name,
+    description: tv.overview,
+    openGraph: {
+      title: tv.name,
+      description: tv.overview,
+      images: [
+        {
+          url: `https://image.tmdb.org/t/p/w1280${tv.backdrop_path}`,
+          width: 1280,
+          height: 720,
+          alt: tv.name,
+        },
+      ],
+    },
+  };
+}
+
 const SingleSeries: FC<SingleSeriesProps> = async ({ params }) => {
   const { id } = await params;
 
   const tv = await getTVSeries(id);
-  if (!tv) return <NotFound />
+  if (!tv) notFound();
 
   return (
     <div className="w-full relative overflow-x-hidden overflow-y-auto">
@@ -33,13 +58,13 @@ const SingleSeries: FC<SingleSeriesProps> = async ({ params }) => {
 
       {tv?.recommendations?.results?.length > 0 && (
         <MovieSlider
-        title="More Like This"
-        data={tv?.recommendations?.results?.map((item: any) => ({
-          title: item.name,
-          url: "/tv/" + item.id,
-          poster: `https://image.tmdb.org/t/p/w1280${item.poster_path}`,
-          rating: item.vote_average
-        }))}
+          title="More Like This"
+          data={tv?.recommendations?.results?.map((item: any) => ({
+            title: item.name,
+            url: "/tv/" + item.id,
+            poster: `https://image.tmdb.org/t/p/w1280${item.poster_path}`,
+            rating: item.vote_average,
+          }))}
         />
       )}
     </div>

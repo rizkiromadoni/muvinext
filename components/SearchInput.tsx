@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 const SearchInput = ({ defaultQuery }: { defaultQuery: string }) => {
   const [query, setQuery] = useState(defaultQuery);
@@ -12,8 +12,10 @@ const SearchInput = ({ defaultQuery }: { defaultQuery: string }) => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!query.trim()) return;
-    router.push(`?q=${encodeURIComponent(query.trim())}`);
+    if (query.trim()) {
+      // router.push(`?q=${encodeURIComponent(query.trim())}`);
+      window.location.href = `?q=${encodeURIComponent(query.trim())}`;
+    }
   };
 
   return (
@@ -22,7 +24,7 @@ const SearchInput = ({ defaultQuery }: { defaultQuery: string }) => {
       onSubmit={handleSubmit}
     >
       <button type="submit" className="cursor-pointer">
-        <MagnifyingGlass className="text-xl opacity-50" />
+        <MagnifyingGlassIcon className="text-xl opacity-50" />
       </button>
       <input
       type="text"

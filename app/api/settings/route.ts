@@ -38,6 +38,11 @@ export async function POST(req: Request) {
          await redis.set(`settings:${item.name}`, item.value);
       }
 
+      const sitemapKeys = await redis.keys('sitemap:*');
+      for (const key of sitemapKeys) {
+         await redis.del(key);
+      }
+
       return new Response(JSON.stringify({ message: "Settings updated" }), { status: 200 });
    } catch (error) {
       return new Response(JSON.stringify({ message: (error as Error).message }), { status: 400 });

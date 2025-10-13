@@ -1,11 +1,20 @@
+import { getSettings } from "@/actions";
 import SettingsForm from "@/components/settings-form";
 import React from "react";
 
-const SettingsPage = () => {
+export const metadata = {
+  title: "Settings",
+  description: "Manage your website settings.",
+};
+
+const SettingsPage = async () => {
+  const options = await getSettings();
+  console.log(options)
+
   return (
     <div className="flex min-h-svh w-full justify-center p-6 md:p-10">
       <div className="w-full">
-        <SettingsForm />
+        <SettingsForm options={options} />
       </div>
     </div>
   );

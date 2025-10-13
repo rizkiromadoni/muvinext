@@ -20,7 +20,7 @@ model Review {
   id        Int      @id @default(autoincrement())
   name      String
   rating    Int
-  comment   String
+  comment   String   @db.Text
   tmdbId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

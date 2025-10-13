@@ -13,26 +13,48 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "./ui/textarea";
 import { toast } from "sonner";
+import { Input } from "./ui/input";
 
-const SettingsForm = ({ className, ...props }: React.ComponentProps<"div">) => {
-  const [footScript, setFootScript] = useState("");
+interface SettingsFormProps {
+  options: {
+    name: string;
+    value: string;
+  }[]
+}
+
+const SettingsForm: React.FC<SettingsFormProps> = ({ options }) => {
+  const [data, setData] = useState<any>({
+    siteTitle: options.find((item) => item.name === "site-title")?.value || "",
+    siteDescription: options.find((item) => item.name === "site-description")?.value || "",
+    siteUrl: options.find((item) => item.name === "site-url")?.value || "",
+    siteName: options.find((item) => item.name === "site-name")?.value || "",
+    siteLocale: options.find((item) => item.name === "site-locale")?.value || "",
+    siteTemplate: options.find((item) => item.name === "site-template")?.value || "",
+    footerScript: options.find((item) => item.name === "footer-script")?.value || ""
+  });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-   const fetchData = async () => {
-      try {
-         const res = await fetch("/api/settings");
-         const data = await res.json();
+  // useEffect(() => {
+  //  const fetchData = async () => {
+  //     try {
+  //        const res = await fetch("/api/settings");
+  //        const data = await res.json();
 
-         const footerScript = data.find((item: any) => item.name === "footer-script")?.value
-         if (footerScript) setFootScript(footerScript)
-      } catch (error) {
-         toast.error((error as Error).message);
-      }
-   }
+  //        const siteTitle = data.find((item: any) => item.name === "site-title")?.value || ""
+  //        const siteDescription = data.find((item: any) => item.name === "site-description")?.value || ""
+  //        const siteUrl = data.find((item: any) => item.name === "site-url")?.value || ""
+  //        const siteName = data.find((item: any) => item.name === "site-name")?.value || ""
+  //        const siteLocale = data.find((item: any) => item.name === "site-locale")?.value || ""
+  //        const siteTemplate = data.find((item: any) => item.name === "site-template")?.value || ""
+  //        const footerScript = data.find((item: any) => item.name === "footer-script")?.value || ""
+  //        setData({ siteTitle, siteDescription, siteUrl, siteName, siteLocale, siteTemplate, footerScript })
+  //     } catch (error) {
+  //        toast.error((error as Error).message);
+  //     }
+  //  }
 
-   fetchData();
-  }, [])
+  //  fetchData();
+  // }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -47,7 +69,31 @@ const SettingsForm = ({ className, ...props }: React.ComponentProps<"div">) => {
          body: JSON.stringify([
             {
                name: "footer-script",
-               value: footScript
+               value: data.footerScript
+            },
+            {
+               name: "site-title",
+               value: data.siteTitle
+            },
+            {
+               name: "site-description",
+               value: data.siteDescription
+            },
+            {
+               name: "site-url",
+               value: data.siteUrl
+            },
+            {
+               name: "site-name",
+               value: data.siteName
+            },
+            {
+               name: "site-locale",
+               value: data.siteLocale
+            },
+            {
+               name: "site-template",
+               value: data.siteTemplate
             }
          ]),
       })
@@ -66,7 +112,7 @@ const SettingsForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-6")}>
       <Card>
         <CardHeader>
           <CardTitle>Settings</CardTitle>
@@ -77,10 +123,36 @@ const SettingsForm = ({ className, ...props }: React.ComponentProps<"div">) => {
         <CardContent>
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col lg:flex-row gap-6 w-full">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="w-full grid gap-3">
+                  <Label htmlFor="siteTitle">Website Title</Label>
+                  <Input id="siteTitle" className="w-full" value={data.siteTitle} onChange={(e) => setData({ ...data, siteTitle: e.target.value })} />
+                </div>
+                <div className="w-full grid gap-3">
+                  <Label htmlFor="siteDescription">Website Description</Label>
+                  <Input id="siteDescription" className="w-full" value={data.siteDescription} onChange={(e) => setData({ ...data, siteDescription: e.target.value })} />
+                </div>
+                <div className="w-full grid gap-3">
+                  <Label htmlFor="siteName">Website Name</Label>
+                  <Input id="siteName" className="w-full" value={data.siteName} onChange={(e) => setData({ ...data, siteName: e.target.value })} />
+                </div>
+                <div className="w-full grid gap-3">
+                  <Label htmlFor="siteUrl">Website URL</Label>
+                  <Input id="siteUrl" className="w-full" value={data.siteUrl} onChange={(e) => setData({ ...data, siteUrl: e.target.value })} />
+                </div>
+                <div className="w-full grid gap-3">
+                  <Label htmlFor="siteTemplate">Website Title Template</Label>
+                  <Input id="siteTemplate" className="w-full" value={data.siteTemplate} onChange={(e) => setData({ ...data, siteTemplate: e.target.value })} />
+                </div>
+                <div className="w-full grid gap-3">
+                  <Label htmlFor="siteLocale">Website Locale</Label>
+                  <Input id="siteLocale" className="w-full" value={data.siteLocale} onChange={(e) => setData({ ...data, siteLocale: e.target.value })} />
+                </div>
+              </div>
+              <div className="flex flex-col gap-6 w-full">
                 <div className="w-full grid gap-3">
                   <Label htmlFor="footScript">Footer Script</Label>
-                  <Textarea id="footScript" className="h-36 lg:h-46" value={footScript} onChange={(e) => setFootScript(e.target.value)} />
+                  <Textarea id="footScript" className="h-36 lg:h-46" value={data.footerScript} onChange={(e) => setData({ ...data, footerScript: e.target.value })} />
                 </div>
               </div>
               <div className="flex flex-col gap-3">
