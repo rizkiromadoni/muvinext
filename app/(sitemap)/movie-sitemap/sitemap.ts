@@ -26,14 +26,11 @@ export default async function sitemap({
     return parsed.results;
   }
 
-  const websiteUrl = await prisma.settings.findFirst({
+  const websiteUrlDB = await prisma.settings.findFirst({
     where: { name: "site-url" },
     select: { value: true },
   });
-
-  if (!websiteUrl || !websiteUrl.value) {
-    throw new Error("Site URL is not configured in settings.");
-  }
+  const websiteUrl = websiteUrlDB?.value || "http://localhost:3000";
 
   const currentDate = new Date().toISOString().split("T")[0];
   const res = await fetch(
@@ -53,7 +50,7 @@ export default async function sitemap({
   }
 
   const results = data.results.map((movie: any) => ({
-    url: new URL(`/movies/${movie.id}`, websiteUrl.value!).href,
+    url: new URL(`/movies/${movie.id}`, websiteUrl).href,
     lastModified: currentDate,
     changeFrequency: "monthly",
     priority: 0.8,

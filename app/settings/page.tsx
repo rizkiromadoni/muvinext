@@ -9,7 +9,6 @@ export const metadata = {
 
 const SettingsPage = async () => {
   const options = await getSettings();
-  console.log(options)
 
   return (
     <div className="flex min-h-svh w-full justify-center p-6 md:p-10">

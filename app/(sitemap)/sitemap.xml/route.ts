@@ -19,14 +19,11 @@ async function buildSitemapIndex(sitemaps: { url: string, lastModified: string |
 
 export async function GET() {
    try {
-      const websiteUrl = await prisma.settings.findFirst({
+      const websiteUrlDB = await prisma.settings.findFirst({
          where: { name: "site-url" },
          select: { value: true },
       });
-
-      if (!websiteUrl || !websiteUrl.value) {
-         throw new Error("Site URL is not configured in settings.");
-      }
+      const websiteUrl = websiteUrlDB?.value || "http://localhost:3000";
 
       const currentDate = new Date().toISOString().split("T")[0];
       const movieTotalPages = process.env.MOVIE_SITEMAP_PAGES ? parseInt(process.env.MOVIE_SITEMAP_PAGES) : 40;
@@ -55,11 +52,11 @@ export async function GET() {
 
       const sitemaps = [
          {
-            url: new URL('/misc-sitemap/sitemap.xml', websiteUrl.value).href,
+            url: new URL('/misc-sitemap/sitemap.xml', websiteUrl).href,
             lastModified: currentDate,
          },
          {
-            url: new URL('/pages-sitemap/sitemap.xml', websiteUrl.value).href,
+            url: new URL('/pages-sitemap/sitemap.xml', websiteUrl).href,
             lastModified: currentDate,
          }
       ];
@@ -68,7 +65,7 @@ export async function GET() {
          const sitemap = movieSitemaps.find((sitemap: any) => sitemap.page === i);
 
          sitemaps.push({
-            url: new URL(`/movie-sitemap/sitemap/${i}.xml`, websiteUrl.value).href,
+            url: new URL(`/movie-sitemap/sitemap/${i}.xml`, websiteUrl).href,
             lastModified: sitemap && sitemap.results.length > 0 ? sitemap.results[0].lastModified : currentDate
          })
       }
@@ -77,7 +74,7 @@ export async function GET() {
          const sitemap = tvSitemaps.find((sitemap: any) => sitemap.page === i);
 
          sitemaps.push({
-            url: new URL(`/tv-sitemap/sitemap/${i}.xml`, websiteUrl.value).href,
+            url: new URL(`/tv-sitemap/sitemap/${i}.xml`, websiteUrl).href,
             lastModified: sitemap && sitemap.results.length > 0 ? sitemap.results[0].lastModified : currentDate
          })
       }
