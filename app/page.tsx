@@ -6,6 +6,8 @@ import React from "react";
 import { getBillboard, getTrendingMovies, getTrendingTV } from "@/models/tmdb/tmdbModel";
 import { getSettings } from "@/actions";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata() {
   const settings = await getSettings();
   const siteTitle = settings.find((item: any) => item.name === "site-title")?.value || "";

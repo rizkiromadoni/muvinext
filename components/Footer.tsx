@@ -1,11 +1,11 @@
-import { getSettings } from '@/actions'
+import { getSetting } from '@/actions'
 import Image from 'next/image'
 import React from 'react'
 
 const Footer = async () => {
-  const options = await getSettings();
+  const siteNameDB = await getSetting("site-name");
+  const siteName = siteNameDB || "Muvinext";
 
-  const siteName = options.find((item: any) => item.name === "site-name")?.value as string || "NextJS";
   return (
     <div className='p-10 mb-20 lg:mb-0 flex flex-col gap-2'>
       <div className='flex gap-2 items-center'>

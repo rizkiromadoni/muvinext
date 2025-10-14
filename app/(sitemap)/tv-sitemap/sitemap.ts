@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import redis from "@/lib/redis";
 import type { MetadataRoute } from "next";
 
+export const dynamic = "force-dynamic";
+
 export async function generateSitemaps() {
   return new Array(
     process.env.TV_SITEMAP_PAGES ? parseInt(process.env.TV_SITEMAP_PAGES) : 40
@@ -24,11 +26,7 @@ export default async function sitemap({
     return parsed.results;
   }
 
-  const websiteUrlDB = await prisma.settings.findFirst({
-    where: { name: "site-url" },
-    select: { value: true },
-  });
-  const websiteUrl = websiteUrlDB?.value || "http://localhost:3000";
+  const websiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
   const currentDate = new Date().toISOString().split("T")[0];
   const res = await fetch(

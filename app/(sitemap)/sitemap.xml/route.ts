@@ -1,6 +1,7 @@
-import { prisma } from "@/lib/prisma";
 import redis from "@/lib/redis";
 import { NextResponse } from "next/server";
+
+export const dynamic = "force-dynamic";
 
 async function buildSitemapIndex(sitemaps: { url: string, lastModified: string | undefined }[]) {
    let xml = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -19,11 +20,7 @@ async function buildSitemapIndex(sitemaps: { url: string, lastModified: string |
 
 export async function GET() {
    try {
-      const websiteUrlDB = await prisma.settings.findFirst({
-         where: { name: "site-url" },
-         select: { value: true },
-      });
-      const websiteUrl = websiteUrlDB?.value || "http://localhost:3000";
+      const websiteUrl = process.env.NEXT_PUBLIC_SITE_URL!;
 
       const currentDate = new Date().toISOString().split("T")[0];
       const movieTotalPages = process.env.MOVIE_SITEMAP_PAGES ? parseInt(process.env.MOVIE_SITEMAP_PAGES) : 40;

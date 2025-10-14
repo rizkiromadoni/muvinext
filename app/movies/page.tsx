@@ -2,6 +2,8 @@ import MovieSlider from '@/components/MovieSlider';
 import { getNowPlayingMovies, getTopRatedMovies, getUpcomingMovies } from '@/models/tmdb/movieModel';
 import React from 'react'
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: 'Movies',
   description: 'Browse and discover movies. Find top-rated, upcoming, and now-playing movies with detailed information and reviews.',

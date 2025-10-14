@@ -19,3 +19,19 @@ export const getSettings = async () => {
       value: item
    }))
 }
+
+export async function getSetting(name: string) {
+   const cached = await redis.get(`settings:${name}`);
+   if (cached) return cached;
+
+   const setting = await prisma.settings.findUnique({
+      where: { name }
+   })
+
+   if (setting) {
+      await redis.set(`settings:${name}`, setting.value);
+      return setting.value;
+   }
+
+   return null;
+}

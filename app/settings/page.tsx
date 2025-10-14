@@ -1,4 +1,3 @@
-import { getSettings } from "@/actions";
 import SettingsForm from "@/components/settings-form";
 import React from "react";
 
@@ -8,7 +7,11 @@ export const metadata = {
 };
 
 const SettingsPage = async () => {
-  const options = await getSettings();
+  const res = await fetch(new URL("/api/settings", process.env.NEXT_PUBLIC_SITE_URL!), {
+    method: "GET",
+    cache: "no-store",
+  });
+  const options = await res.json();
 
   return (
     <div className="flex min-h-svh w-full justify-center p-6 md:p-10">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { cn } from "@/lib/utils";
@@ -26,35 +26,13 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ options }) => {
   const [data, setData] = useState<any>({
     siteTitle: options.find((item) => item.name === "site-title")?.value || "",
     siteDescription: options.find((item) => item.name === "site-description")?.value || "",
-    siteUrl: options.find((item) => item.name === "site-url")?.value || "",
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || "",
     siteName: options.find((item) => item.name === "site-name")?.value || "",
     siteLocale: options.find((item) => item.name === "site-locale")?.value || "",
     siteTemplate: options.find((item) => item.name === "site-template")?.value || "",
     footerScript: options.find((item) => item.name === "footer-script")?.value || ""
   });
   const [loading, setLoading] = useState(false);
-
-  // useEffect(() => {
-  //  const fetchData = async () => {
-  //     try {
-  //        const res = await fetch("/api/settings");
-  //        const data = await res.json();
-
-  //        const siteTitle = data.find((item: any) => item.name === "site-title")?.value || ""
-  //        const siteDescription = data.find((item: any) => item.name === "site-description")?.value || ""
-  //        const siteUrl = data.find((item: any) => item.name === "site-url")?.value || ""
-  //        const siteName = data.find((item: any) => item.name === "site-name")?.value || ""
-  //        const siteLocale = data.find((item: any) => item.name === "site-locale")?.value || ""
-  //        const siteTemplate = data.find((item: any) => item.name === "site-template")?.value || ""
-  //        const footerScript = data.find((item: any) => item.name === "footer-script")?.value || ""
-  //        setData({ siteTitle, siteDescription, siteUrl, siteName, siteLocale, siteTemplate, footerScript })
-  //     } catch (error) {
-  //        toast.error((error as Error).message);
-  //     }
-  //  }
-
-  //  fetchData();
-  // }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,10 +56,6 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ options }) => {
             {
                name: "site-description",
                value: data.siteDescription
-            },
-            {
-               name: "site-url",
-               value: data.siteUrl
             },
             {
                name: "site-name",
@@ -138,7 +112,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ options }) => {
                 </div>
                 <div className="w-full grid gap-3">
                   <Label htmlFor="siteUrl">Website URL</Label>
-                  <Input id="siteUrl" className="w-full" value={data.siteUrl} onChange={(e) => setData({ ...data, siteUrl: e.target.value })} />
+                  <Input id="siteUrl" className="w-full" value={data.siteUrl} onChange={(e) => setData({ ...data, siteUrl: e.target.value })} disabled />
                 </div>
                 <div className="w-full grid gap-3">
                   <Label htmlFor="siteTemplate">Website Title Template</Label>

@@ -2,6 +2,8 @@ import MovieSlider from '@/components/MovieSlider'
 import { getAiringTodaySeries, getOnTheAirSeries, getTopRatedSeries } from '@/models/tmdb/tvModel'
 import React from 'react'
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: 'TV Series',
   description: 'Explore and discover TV series. Find top-rated, currently airing, and popular TV shows with detailed information and reviews.',

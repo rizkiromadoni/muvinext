@@ -14,6 +14,8 @@ const dmSans = DM_Sans({
   subsets: ["latin"],
 });
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
 
@@ -33,9 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         settings.find((item: any) => item.name === "site-description")?.value ||
         "created by NextJS",
-      url:
-        settings.find((item: any) => item.name === "site-url")?.value ||
-        "http://localhost:3000",
+      url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
       siteName:
         settings.find((item: any) => item.name === "site-name")?.value ||
         "NextJS",

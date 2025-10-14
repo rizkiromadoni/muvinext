@@ -1,13 +1,27 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import redis from "@/lib/redis";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
    try {
-      const settings = await prisma.settings.findMany();
-      return new Response(JSON.stringify(settings))
+      const cachedKeys = await redis.keys("settings:*");
+      if (cachedKeys.length === 0) {
+         const settings = await prisma.settings.findMany();
+         for (const item of settings) {
+            await redis.set(`settings:${item.name}`, item.value);
+         }
+
+         return NextResponse.json(settings);
+      }
+
+      const cached = await redis.mget(cachedKeys);
+      return NextResponse.json(cached.map((item: any, index: number) => ({
+         name: cachedKeys[index].replace("settings:", ""),
+         value: item
+      })));
    } catch (error) {
-      return new Response(JSON.stringify({ message: (error as Error).message }), { status: 500 });
+      return NextResponse.json({ message: (error as Error).message }, { status: 400 });
    }
 }
 
