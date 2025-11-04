@@ -12,6 +12,31 @@ model User {
   id       Int      @id @default(autoincrement())
   username  String   @unique
   password  String
+
+  blogs     Blog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Blog {
+  id        Int      @id @default(autoincrement())
+  title     String
+  slug      String   @unique
+  content   String   @db.LongText
+  imageUrl  String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  blogCategories BlogCategory[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BlogCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   
+  slug      String   @unique
+  blogs     Blog[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

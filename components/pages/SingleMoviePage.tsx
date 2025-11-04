@@ -24,7 +24,7 @@ const SingleMoviePage = ({ data }: { data: any }) => {
     <>
       <div className="flex items-center justify-center gap-8 py-6">
         <button
-          className={`text-l md:text-xl p-3 cursor-pointer ${
+          className={`text-lg md:text-xl p-3 cursor-pointer ${
             active === "overview" ? "border-b-2 border-b-white" : "opacity-50"
           }`}
           onClick={() => setActive("overview")}
@@ -33,7 +33,7 @@ const SingleMoviePage = ({ data }: { data: any }) => {
         </button>
         {trailer && (
           <button
-            className={`text-l md:text-xl p-3 cursor-pointer ${
+            className={`text-lg md:text-xl p-3 cursor-pointer ${
               active === "trailer" ? "border-b-2 border-b-white" : "opacity-50"
             }`}
             onClick={() => setActive("trailer")}
@@ -42,7 +42,7 @@ const SingleMoviePage = ({ data }: { data: any }) => {
           </button>
         )}
         <button
-            className={`text-l md:text-xl p-3 cursor-pointer ${
+            className={`text-lg md:text-xl p-3 cursor-pointer ${
               active === "review" ? "border-b-2 border-b-white" : "opacity-50"
             }`}
             onClick={() => setActive("review")}

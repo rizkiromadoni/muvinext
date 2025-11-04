@@ -3,9 +3,9 @@
 import React from "react";
 import {
   FilmStripIcon,
-  GearSixIcon,
   HouseIcon,
   MagnifyingGlassIcon,
+  PopcornIcon,
   SignOutIcon,
   TelevisionSimpleIcon,
 } from "@phosphor-icons/react";
@@ -32,11 +32,11 @@ const Sidebar = () => {
         </Link>
         {session?.user && (
           <>
-            <Link href="/settings">
-              <GearSixIcon weight="fill" className="size-7" alt="Settings" />
+            <Link href="/admin">
+              <PopcornIcon className="size-7" alt="Dashboard" />
             </Link>
             <button>
-              <SignOutIcon className="size-7 cursor-pointer" alt="Sign Out" onClick={() => signOut()} />
+              <SignOutIcon className="size-7 cursor-pointer" alt="Sign Out" onClick={() => signOut({ redirect: true, redirectTo: "/" })} />
             </button>
           </>
         )}

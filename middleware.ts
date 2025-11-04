@@ -17,7 +17,7 @@ export default auth((req) => {
     }
 
     if (!req.auth) {
-        if (req.nextUrl.pathname.startsWith("/settings")) {
+        if (req.nextUrl.pathname.startsWith("/admin")) {
             return NextResponse.redirect(new URL("/login", req.url));
         }
     }

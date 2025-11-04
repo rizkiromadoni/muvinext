@@ -1,3 +1,4 @@
+import { prisma } from "@/lib/prisma";
 import redis from "@/lib/redis";
 import { NextResponse } from "next/server";
 
@@ -74,6 +75,32 @@ export async function GET() {
             url: new URL(`/tv-sitemap/sitemap/${i}.xml`, websiteUrl).href,
             lastModified: sitemap && sitemap.results.length > 0 ? sitemap.results[0].lastModified : currentDate
          })
+      }
+
+      const totalBlogPosts = await prisma.blog.count();
+      const blogPostsPerPage = 20;
+      const blogTotalPages = Math.ceil(totalBlogPosts / 20);
+
+      // Add blog sitemap entries
+      for (let i = 1; i <= blogTotalPages; i++) {
+         const latestBlogPosts = await prisma.blog.findMany({
+            select: { updatedAt: true },
+            orderBy: { createdAt: 'asc' },
+            skip: (i - 1) * blogPostsPerPage,
+            take: 20
+         });
+         if (!latestBlogPosts) {
+            continue;
+         }
+
+         const latestModifiedPost = latestBlogPosts.reduce((latest, post) => {
+            return post.updatedAt > latest ? post.updatedAt : latest;
+         }, latestBlogPosts[0].updatedAt);
+
+         sitemaps.push({
+            url: new URL(`/blog-sitemap/sitemap/${i}.xml`, websiteUrl).href,
+            lastModified: latestModifiedPost.toISOString().split('T')[0],
+         });
       }
 
       const sitemapIndexXML = await buildSitemapIndex(sitemaps);

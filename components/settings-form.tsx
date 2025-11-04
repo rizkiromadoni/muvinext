@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
-import { cn } from "@/lib/utils";
 import {
   Card,
   CardContent,
@@ -86,7 +85,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ options }) => {
   }
 
   return (
-    <div className={cn("flex flex-col gap-6")}>
+    <div className="flex flex-col gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Settings</CardTitle>

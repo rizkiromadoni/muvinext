@@ -1,4 +1,5 @@
 import SettingsForm from "@/components/settings-form";
+import { SiteHeader } from "@/components/site-header";
 import React from "react";
 
 export const metadata = {
@@ -14,11 +15,14 @@ const SettingsPage = async () => {
   const options = await res.json();
 
   return (
+    <>
+    <SiteHeader title="Settings" />
     <div className="flex min-h-svh w-full justify-center p-6 md:p-10">
       <div className="w-full">
         <SettingsForm options={options} />
       </div>
     </div>
+    </>
   );
 };
 

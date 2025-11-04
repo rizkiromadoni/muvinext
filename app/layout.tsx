@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
-import SidebarMobile from "@/components/SidebarMobile";
-import Footer from "@/components/Footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { SessionProvider } from "next-auth/react";
@@ -62,18 +59,18 @@ export default async function RootLayout({
         <SessionProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
-            enableSystem
+            forcedTheme="dark"
             disableTransitionOnChange
           >
-            <div className="relative">
+            {children}
+            {/* <div className="relative">
               <Sidebar />
               <div className="relative w-auto lg:ml-18">
                 {children}
                 <Footer />
               </div>
               <SidebarMobile />
-            </div>
+            </div> */}
             <Toaster />
           </ThemeProvider>
         </SessionProvider>
