@@ -1,6 +1,8 @@
+import React from "react";
+
+import { prisma } from "@/lib/prisma";
 import SettingsForm from "@/components/settings-form";
 import { SiteHeader } from "@/components/site-header";
-import React from "react";
 
 export const metadata = {
   title: "Settings",
@@ -8,11 +10,7 @@ export const metadata = {
 };
 
 const SettingsPage = async () => {
-  const res = await fetch(new URL("/api/settings", process.env.NEXT_PUBLIC_SITE_URL!), {
-    method: "GET",
-    cache: "no-store",
-  });
-  const options = await res.json();
+  const options = await prisma.settings.findMany();
 
   return (
     <>

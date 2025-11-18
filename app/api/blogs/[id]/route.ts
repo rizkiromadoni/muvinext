@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(
@@ -43,6 +44,7 @@ export async function POST(
       },
     });
 
+    revalidateTag("blog-sitemaps");
     return NextResponse.json(
       { message: "Blog updated successfully" },
       { status: 200 }
@@ -78,6 +80,7 @@ export async function DELETE(
       where: { id: blogId },
     });
 
+    revalidateTag("blog-sitemaps");
     return NextResponse.json(
       { message: `Blog with id ${blogId} deleted successfully` },
       { status: 200 }

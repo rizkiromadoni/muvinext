@@ -1,22 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { MetadataRoute } from "next";
+import { unstable_cache } from "next/cache";
 
-export async function generateSitemaps() {
-   const totalBlogPosts = await prisma.blog.count();
-   const blogsPerPage = 20;
-   const totalPages = Math.ceil(totalBlogPosts / blogsPerPage);
-   return new Array(totalPages).fill(0).map((_, i) => ({ id: i + 1 }));
-}
-
-export default async function sitemap({ id }: { id: number }): Promise<MetadataRoute.Sitemap> {
-   const websiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-   const blogsPerPage = 20;
-   const page = id;
-   const skip = (page - 1) * blogsPerPage;
-
-   const blogs = await prisma.blog.findMany({
-      skip: skip,
-      take: blogsPerPage,
+const getBlogSitemaps = unstable_cache(async () => {
+   return await prisma.blog.findMany({
       orderBy: {
          createdAt: 'asc',
       },
@@ -25,13 +12,17 @@ export default async function sitemap({ id }: { id: number }): Promise<MetadataR
          updatedAt: true,
       },
    });
+}, ["blog-sitemaps"], { tags: ["blog-sitemaps"], revalidate: 60 * 60 * 24 * 7 });
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+   const websiteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+
+   const blogs = await getBlogSitemaps();
    
-   const sitemapEntries: MetadataRoute.Sitemap = blogs.map((blog) => ({
+   return blogs.map((blog) => ({
       url: new URL(`/blogs/${blog.slug}`, websiteUrl).href,
-      lastModified: blog.updatedAt,
+      lastModified: new Date(blog.updatedAt).toISOString().split("T")[0],
       changeFrequency: "weekly",
       priority: 0.9,
    }));
-
-   return sitemapEntries;
 }

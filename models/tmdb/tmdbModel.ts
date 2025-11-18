@@ -1,45 +1,75 @@
-import redis from "@/lib/redis";
-import fetchTmdb from "@/lib/tmdb";
-
 export const getBillboard = async () => {
-   const cacheKey = "tmdb:billboard";
+  try {
+    const res = await fetch("https://api.themoviedb.org/3/trending/all/week", {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+      },
+      next: { revalidate: 60 * 60 * 24 }, // Cache for 1 days
+    });
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const data = await fetchTmdb("/trending/all/week")
-   const billboard = data.results.filter((item: any) => item.media_type === "movie" || item.media_type === "tv").shift()
+    const data = await res.json();
 
-   await redis.set(cacheKey, JSON.stringify(billboard), "EX", 60 * 60 * 6); // Cache for 6 hours
-   return billboard;
-}
+    const billboard = data.results
+      .filter(
+        (item: any) => item.media_type === "movie" || item.media_type === "tv"
+      )
+      .shift();
+
+    return billboard;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
 export const getTrendingMovies = async () => {
-   const cacheKey = "tmdb:trending:movies";
+   try {
+      const res = await fetch("https://api.themoviedb.org/3/trending/movie/day", {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+      },
+      next: { revalidate: 60 * 60 * 24 }, // Cache for 1 days
+    });
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+
+    const data = await res.json();
+    return data.results
+   } catch (error) {
+      console.error(error);
+      return null;
    }
-
-   const { results } = await fetchTmdb("/trending/movie/day")
-
-   await redis.set(cacheKey, JSON.stringify(results), "EX", 60 * 60 * 6); // Cache for 6 hours
-   return results;
-}
+};
 
 export const getTrendingTV = async () => {
-   const cacheKey = "tmdb:trending:tv";
+   try {
+      const res = await fetch("https://api.themoviedb.org/3/trending/tv/day", {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+      },
+      next: { revalidate: 60 * 60 * 24 }, // Cache for 1 days
+    });
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+
+    const data = await res.json();
+    return data.results;
+   } catch (error) {
+      console.error(error);
+      return null;
    }
-
-   const { results } = await fetchTmdb("/trending/tv/day")
-
-   await redis.set(cacheKey, JSON.stringify(results), "EX", 60 * 60 * 6); // Cache for 6 hours
-   return results;
-}
+};

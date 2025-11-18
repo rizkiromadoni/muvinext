@@ -1,5 +1,5 @@
-import { getSetting } from "@/actions";
 import { LoginForm } from "@/components/login-form"
+import { getSettings } from "@/models/settings";
 import { PopcornIcon } from "@phosphor-icons/react/dist/ssr";
 
 export function generateMetadata() {
@@ -14,7 +14,8 @@ export function generateMetadata() {
 }
 
 export default async function Page() {
-  const siteName = await getSetting("site-name");
+  const settings = await getSettings();
+  const siteName = settings.find((item: any) => item.name === "site-name")?.value || "";
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">

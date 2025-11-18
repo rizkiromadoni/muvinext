@@ -15,3 +15,22 @@ export function formatReadableDate(date: string | Date) {
     hour12: false,      // 12-hour format, ubah ke false kalau mau 24 jam
   });
 }
+
+export function buildSitemapIndex(
+  sitemaps: { url: string; lastModified: string | undefined }[]
+) {
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>';
+  xml += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+
+  for (const sitemap of sitemaps) {
+    xml += "<sitemap>";
+    xml += `<loc>${sitemap.url}</loc>`;
+    xml += sitemap.lastModified
+      ? `<lastmod>${sitemap.lastModified}</lastmod>`
+      : "";
+    xml += "</sitemap>";
+  }
+
+  xml += "</sitemapindex>";
+  return xml;
+}

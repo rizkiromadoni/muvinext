@@ -1,8 +1,9 @@
 import { prisma } from '@/lib/prisma';
+import { revalidateTag } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-const ReviewSchama = z.object({
+const ReviewSchema = z.object({
    tmdbId: z.number(),
    name: z.string(),
    rating: z.number().min(1).max(5),
@@ -45,13 +46,14 @@ export async function POST(req: Request) {
    }
 
    const body = await req.json();
-   const review = ReviewSchama.safeParse(body);
+   const review = ReviewSchema.safeParse(body);
 
    if (review.success) {
       const result = await prisma.review.create({
          data: review.data,
       })
 
+      revalidateTag(`review:${review.data.tmdbId}`);
       return NextResponse.json(result);
    }
 

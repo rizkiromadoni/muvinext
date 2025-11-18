@@ -2,10 +2,13 @@ import React from "react";
 
 import { AdminSidebar } from "@/components/admin-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getSetting } from "@/actions";
+import { getSettings } from "@/models/settings";
+
+export const dynamic = "force-dynamic";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
-  const siteName = await getSetting("site-name");
+  const settings = await getSettings()
+  const siteName = settings.find((item: any) => item.name === "site-name")?.value || "";
 
   return (
     <SidebarProvider
@@ -19,18 +22,6 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
       <AdminSidebar variant="inset" siteName={siteName} />
       <SidebarInset>
         {children}
-        {/* <SiteHeader title='Dashboard' />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <SectionCards />
-              <div className="px-4 lg:px-6">
-                <ChartAreaInteractive />
-              </div>
-              <DataTable data={[]} />
-            </div>
-          </div>
-        </div> */}
       </SidebarInset>
     </SidebarProvider>
   );

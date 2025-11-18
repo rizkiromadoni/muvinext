@@ -1,73 +1,130 @@
-import redis from "@/lib/redis";
-import fetchTmdb from "@/lib/tmdb";
-
 export const getMovie = async (id: string | number) => {
-   const cachedKey = `tmdb:movies:id:${id}`;
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${id}?append_to_response=credits,videos,recommendations`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+        },
+        next: { revalidate: 60 * 60 * 24 * 7 }, // Cache for 7 days
+      }
+    );
 
-   const cachedData = await redis.get(cachedKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      if (res.status === 404) {
+        return null;
+      }
+      throw new Error(res.statusText);
+    }
 
-   const result = await fetchTmdb(`/movie/${id}?append_to_response=credits,videos,recommendations`);
-   if (!result) return null;
+    const data = await res.json();
+    if (!data) {
+      return null;
+    }
 
-   await redis.set(cachedKey, JSON.stringify(result), "EX", 60 * 60 * 24); // Cache for 24 hours
-   return result;
-}
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
-export const getMoviesByGenre = async (genreId: string | number, page: string | number) => {
-   const cachedKey = `tmdb:genres:movies:id:${genreId}:page:${page}`;
+export const getMoviesByGenre = async (
+  genreId: string | number,
+  page: string | number
+) => {
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/discover/movie?with_genres=${genreId}&page=${page}`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+        },
+        next: { revalidate: 60 * 60 * 24 * 7 }, // Cache for 7 days
+      }
+    );
 
-   const cachedData = await redis.get(cachedKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const results = await fetchTmdb(`/discover/movie?with_genres=${genreId}&page=${page}`);
-   await redis.set(cachedKey, JSON.stringify(results), "EX", 60 * 60 * 24); // Cache for 24 hours
-
-   return results;
-}
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
 export const getNowPlayingMovies = async () => {
-   const cacheKey = "tmdb:movies:now_playing";
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/now_playing`, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+      },
+      next: { revalidate: 60 * 60 * 24 }, // Cache for 1 days
+    });
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const { results } = await fetchTmdb("/movie/now_playing");
-   await redis.set(cacheKey, JSON.stringify(results), "EX", 60 * 60 * 6); // Cache for 6 hours
-
-   return results;
-}
+    const data = await res.json();
+    return data.results;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
 export const getTopRatedMovies = async () => {
-   const cacheKey = "tmdb:movies:top_rated";
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/top_rated`, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+      },
+      next: { revalidate: 60 * 60 * 24 }, // Cache for 1 days
+    });
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const { results } = await fetchTmdb("/movie/top_rated");
-   await redis.set(cacheKey, JSON.stringify(results), "EX", 60 * 60 * 6); // Cache for 6 hours
-
-   return results;
-}
+    const data = await res.json();
+    return data.results;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
 
 export const getUpcomingMovies = async () => {
-   const cacheKey = "tmdb:movies:upcoming";
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/upcoming`, {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+      },
+      next: { revalidate: 60 * 60 * 24 }, // Cache for 1 days
+    });
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const { results } = await fetchTmdb("/movie/upcoming");
-   await redis.set(cacheKey, JSON.stringify(results), "EX", 60 * 60 * 6); // Cache for 6 hours
-
-   return results;
-}
+    const data = await res.json();
+    return data.results;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

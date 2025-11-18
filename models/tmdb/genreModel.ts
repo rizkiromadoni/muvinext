@@ -1,30 +1,51 @@
-import redis from "@/lib/redis";
-import fetchTmdb from "@/lib/tmdb";
-
 export const getMovieGenres = async () => {
-   const cacheKey = "tmdb:genres:movies"
+      try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/genre/movie/list`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+        },
+        next: { revalidate: 60 * 60 * 24 * 7 }, // Cache for 7 days
+      }
+    );
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const { genres } = await fetchTmdb("/genre/movie/list");
-   await redis.set(cacheKey, JSON.stringify(genres), "EX", 60 * 60 * 24 * 7); // Cache for 7 days
-
-   return genres;
+    const data = await res.json();
+    return data.genres;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 export const getTVGenres = async () => {
-   const cacheKey = "tmdb:genres:tv";
+   try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/genre/tv/list`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${process.env.TMDB_API_KEY}`,
+        },
+        next: { revalidate: 60 * 60 * 24 * 7 }, // Cache for 7 days
+      }
+    );
 
-   const cachedData = await redis.get(cacheKey);
-   if (cachedData) {
-      return JSON.parse(cachedData);
-   }
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
 
-   const { genres } = await fetchTmdb("/genre/tv/list");
-   await redis.set(cacheKey, JSON.stringify(genres), "EX", 60 * 60 * 24 * 7); // Cache for 7 days
-
-   return genres;
+    const data = await res.json();
+    return data.genres;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }

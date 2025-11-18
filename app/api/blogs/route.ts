@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/utils";
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -55,6 +56,7 @@ export async function POST(req: Request) {
       },
     });
 
+    revalidateTag("blog-sitemaps");
     return NextResponse.json(blog, { status: 201 });
   } catch (error) {
     return NextResponse.json(

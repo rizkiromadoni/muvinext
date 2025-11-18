@@ -24,7 +24,13 @@ const ReviewForm = ({ tmdbId }: { tmdbId: number | string }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`/api/reviews?tmdbId=${tmdbId}`)
+    fetch(`/api/reviews?tmdbId=${tmdbId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      next: { tags: [`review:${tmdbId}`], revalidate: 60 * 60 * 24 * 7 }, // Cache for 7 days
+    })
       .then((res) => res.json())
       .then((data) => {
         setReviews(data);
