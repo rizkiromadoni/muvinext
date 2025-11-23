@@ -3,19 +3,21 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import ReviewSection from "../ReviewSection";
+import CastList from "../custom/cast-list";
+import Link from "next/link";
 
 const SingleMoviePage = ({ data }: { data: any }) => {
   const [active, setActive] = useState("overview");
 
-  const directors = data.credits.crew
-    .filter((item: any) => item.job === "Director")
-    .map((item: any) => item.name);
-  const producers = data.credits.crew
-    .filter((item: any) => item.job === "Producer")
-    .map((item: any) => item.name);
-  const actors = data.credits.cast
-    .filter((item: any) => item.known_for_department === "Acting")
-    .map((item: any) => item.name);
+  const directors = data.credits.crew.filter(
+    (item: any) => item.job === "Director"
+  );
+  const producers = data.credits.crew.filter(
+    (item: any) => item.job === "Producer"
+  );
+  const actors = data.credits.cast.filter(
+    (item: any) => item.known_for_department === "Acting"
+  );
   const trailer = data?.videos?.results?.filter(
     (item: any) => item.type === "Trailer"
   )[0];
@@ -42,13 +44,13 @@ const SingleMoviePage = ({ data }: { data: any }) => {
           </button>
         )}
         <button
-            className={`text-lg md:text-xl p-3 cursor-pointer ${
-              active === "review" ? "border-b-2 border-b-white" : "opacity-50"
-            }`}
-            onClick={() => setActive("review")}
-          >
-            REVIEW
-          </button>
+          className={`text-lg md:text-xl p-3 cursor-pointer ${
+            active === "review" ? "border-b-2 border-b-white" : "opacity-50"
+          }`}
+          onClick={() => setActive("review")}
+        >
+          REVIEW
+        </button>
       </div>
       <div className="mx-auto flex p-4 gap-8 items-start justify-center max-w-300">
         {active === "overview" && (
@@ -112,23 +114,40 @@ const SingleMoviePage = ({ data }: { data: any }) => {
                   {directors.length > 0 && (
                     <>
                       <div>Directors</div>
-                      <div>{directors.join(", ")}</div>
+                      <div>
+                        {directors.map((item: any, index: number) => (
+                          <Link
+                            className="hover:underline"
+                            key={index}
+                            href={`/people/${item.id}`}
+                          >
+                            {item.name}
+                            {index !== directors.length - 1 && ", "}
+                          </Link>
+                        ))}
+                      </div>
                     </>
                   )}
                   {producers.length > 0 && (
                     <>
                       <div>Producers</div>
-                      <div>{producers.join(", ")}</div>
-                    </>
-                  )}
-                  {actors.length > 0 && (
-                    <>
-                      <div>Actors</div>
-                      <div>{actors.join(", ")}</div>
+                      <div>
+                        {producers.map((item: any, index: number) => (
+                          <Link
+                            className="hover:underline"
+                            key={index}
+                            href={`/people/${item.id}`}
+                          >
+                            {item.name}
+                            {index !== producers.length - 1 && ", "}
+                          </Link>
+                        ))}
+                      </div>
                     </>
                   )}
                 </div>
               </div>
+              <CastList data={actors} />
             </div>
           </>
         )}

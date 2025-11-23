@@ -1,7 +1,7 @@
 export const getTVSeries = async (id: string | number) => {
   try {
     const res = await fetch(
-      `https://api.themoviedb.org/3/tv/${id}?append_to_response=credits,videos,recommendations`,
+      `https://api.themoviedb.org/3/tv/${id}?append_to_response=aggregate_credits,videos,recommendations`,
       {
         method: "GET",
         headers: {

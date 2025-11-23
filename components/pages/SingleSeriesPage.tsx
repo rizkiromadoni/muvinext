@@ -5,19 +5,19 @@ import Image from "next/image";
 
 import ReviewSection from "../ReviewSection";
 import { convertRatingToStarFill } from "@/lib/helper";
+import CastList from "../custom/cast-list";
+import Link from "next/link";
 
 const SingleSeriesPage = ({ data }: { data: any }) => {
   const [active, setActive] = useState("overview");
 
-  const directors = data.credits.crew
-    .filter((item: any) => item.job === "Director")
-    .map((item: any) => item.name);
-  const producers = data.credits.crew
-    .filter((item: any) => item.job === "Producer")
-    .map((item: any) => item.name);
-  const actors = data.credits.cast
-    .filter((item: any) => item.known_for_department === "Acting")
-    .map((item: any) => item.name);
+  const directors = data.created_by;
+  const producers = data.aggregate_credits.crew.filter(
+    (item: any) => item.job === "Producer"
+  );
+  const actors = data.aggregate_credits.cast.filter(
+    (item: any) => item.known_for_department === "Acting"
+  );
   const trailer = data?.videos?.results?.filter(
     (item: any) => item.type === "Trailer"
   )[0];
@@ -44,13 +44,13 @@ const SingleSeriesPage = ({ data }: { data: any }) => {
           </button>
         )}
         <button
-            className={`text-lg md:text-xl p-3 cursor-pointer ${
-              active === "review" ? "border-b-2 border-b-white" : "opacity-50"
-            }`}
-            onClick={() => setActive("review")}
-          >
-            REVIEW
-          </button>
+          className={`text-lg md:text-xl p-3 cursor-pointer ${
+            active === "review" ? "border-b-2 border-b-white" : "opacity-50"
+          }`}
+          onClick={() => setActive("review")}
+        >
+          REVIEW
+        </button>
       </div>
       <div className="mx-auto flex p-4 gap-8 items-start justify-center max-w-300">
         {active === "overview" && (
@@ -102,23 +102,40 @@ const SingleSeriesPage = ({ data }: { data: any }) => {
                   {directors.length > 0 && (
                     <>
                       <div>Directors</div>
-                      <div>{directors.join(", ")}</div>
+                      <div>
+                        {directors.map((item: any, index: number) => (
+                          <Link
+                            className="hover:underline"
+                            key={index}
+                            href={`/people/${item.id}`}
+                          >
+                            {item.name}
+                            {index !== directors.length - 1 && ", "}
+                          </Link>
+                        ))}
+                      </div>
                     </>
                   )}
                   {producers.length > 0 && (
                     <>
                       <div>Producers</div>
-                      <div>{producers.join(", ")}</div>
-                    </>
-                  )}
-                  {actors.length > 0 && (
-                    <>
-                      <div>Actors</div>
-                      <div>{actors.join(", ")}</div>
+                      <div>
+                        {producers.map((item: any, index: number) => (
+                          <Link
+                            className="hover:underline"
+                            key={index}
+                            href={`/people/${item.id}`}
+                          >
+                            {item.name}
+                            {index !== producers.length - 1 && ", "}
+                          </Link>
+                        ))}
+                      </div>
                     </>
                   )}
                 </div>
               </div>
+              <CastList data={actors} />
               <div>
                 <h2 className="text-3xl mb-4">Seasons</h2>
                 <div className="flex flex-col gap-2">
@@ -138,9 +155,9 @@ const SingleSeriesPage = ({ data }: { data: any }) => {
                       </div>
                       <div className="text-sm opacity-50 border-l border-l-black px-5 py-4 flex flex-col gap-2">
                         <div>
-                          <h2 className="text-lg lg:text-xl line-clamp-2">
+                          <Link className="text-lg lg:text-xl line-clamp-2 hover:underline" href={`/tv/${data.id}/seasons/${season.season_number}`}>
                             {season.name}
-                          </h2>
+                          </Link>
                           <div className="flex flex-row flex-wrap gap-2 items-center">
                             {season.vote_average > 0 && (
                               <>
@@ -209,9 +226,7 @@ const SingleSeriesPage = ({ data }: { data: any }) => {
           <div className="w-full h-full">
             <iframe
               className="w-full aspect-video"
-              src={`https://www.youtube.com/embed/${
-                trailer.key
-              }`}
+              src={`https://www.youtube.com/embed/${trailer.key}`}
               title={trailer.name}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
